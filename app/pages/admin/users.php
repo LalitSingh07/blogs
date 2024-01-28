@@ -1,10 +1,27 @@
 <?php if($action == 'add'):?>
     <div class="col-md-6 mx-auto">
-        <form method="post"> 
+        <form method="post" enctype="multipart/form-data"> 
         <h1 class="h3 mb-3 fw-normal">Add users</h1>
         <?php if(!empty($errors)):?>
         <div class="alert alert-danger">please fix error</div>
         <?php endif;?>
+        <div class="my-2">
+		    	<label class="d-block">
+		    		<img class="mx-auto d-block image-preview-edit" src="<?=getimage('')?>" style="cursor: pointer;width: 150px;height: 150px;object-fit: cover;">
+		    		<input onchange="display_image_edit(this.files[0])" type="file" name="image" class="d-none">
+		    	</label>
+		    	<?php if(!empty($errors['image'])):?>
+			      <div class="text-danger"><?=$errors['image']?></div>
+			    <?php endif;?>
+
+		    	<script>
+		    		
+		    		function display_image_edit(file)
+		    		{
+		    			document.querySelector(".image-preview-edit").src = URL.createObjectURL(file);
+		    		}
+		    	</script>
+		    </div>
 
         <div class="form-floating">
         <input value="<?= oldvalue('username') ?>" name="username" type="text" class="form-control mb-2" id="username" placeholder="Username">
@@ -21,6 +38,16 @@
         <?php if(!empty($errors['email'])): ?>
         <div class="text-danger"><?=$errors['email']?></div>
         <?php endif;?>
+        <div class="form-floating my-3">
+	      <select name="role" class="form-select">
+	      	<option value="user">User</option>
+	      	<option value="admin">Admin</option>
+	      </select>
+	      <label for="floatingInput">Role</label>
+	    </div>
+	      <?php if(!empty($errors['role'])):?>
+	      <div class="text-danger"><?=$errors['role']?></div>
+	      <?php endif;?>
         <div class="form-floating">
         <input value="<?= oldvalue('password') ?>"  name= "password" type="password" class="form-control mb-2" id="Password" placeholder="Password">
         <label for="Password">Password</label>
@@ -60,7 +87,7 @@
 
         <div class="my-2">
 		    	<label class="d-block">
-		    		<img class="mx-auto d-block image-preview-edit" src="<?=getimage('')?>" style="cursor: pointer;width: 150px;height: 150px;object-fit: cover;">
+		    		<img class="mx-auto d-block image-preview-edit" src="<?=getimage($row['image'])?>" style="cursor: pointer;width: 150px;height: 150px;object-fit: cover;">
 		    		<input onchange="display_image_edit(this.files[0])" type="file" name="image" class="d-none">
 		    	</label>
 		    	<?php if(!empty($errors['image'])):?>
@@ -91,6 +118,18 @@
         <?php if(!empty($errors['email'])): ?>
         <div class="text-danger"><?=$errors['email']?></div>
         <?php endif;?>
+
+        <div class="form-floating my-3">
+		      <select name="role" class="form-select">
+		      	<option <?=old_select('role','user',$row['role'])?> value="user">User</option>
+		      	<option <?=old_select('role','admin',$row['role'])?> value="admin">Admin</option>
+		      </select>
+		      <label for="floatingInput">Role</label>
+		</div>
+		      <?php if(!empty($errors['role'])):?>
+		      <div class="text-danger"><?=$errors['role']?></div>
+		      <?php endif;?>
+
         <div class="form-floating">
         <input value="<?= oldvalue('password') ?>"  name= "password" type="password" class="form-control mb-2" id="Password" placeholder="Password">
         <label for="Password">Password</label>

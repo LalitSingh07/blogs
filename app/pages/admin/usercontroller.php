@@ -36,16 +36,45 @@ if ($action == 'add') {
         }
       }
   
+                //validate image and move to folder name uploads
+                $allowed = ['image/jpeg','image/png','image/webp'];
+                if(!empty($_FILES['image']['name']))
+                {
+                  $destination = "";
+                  if(!in_array($_FILES['image']['type'], $allowed))
+                  {
+                    $errors['image'] = "Image format not supported";
+                  }else
+                  {
+                    $folder = "uploads/";
+                    if(!file_exists($folder))
+                    {
+                      mkdir($folder, 0777, true);
+                     
+                    }
+                    $destination = $folder . time() . $_FILES['image']['name'];
+                    move_uploaded_file($_FILES['image']['tmp_name'], $destination);
+                  }
+        
+                }
       // If no errors, register the user
       if (empty($errors)) {
         $data = [
           'username' => $_POST['username'],
           'email' => $_POST['email'],
-          'role' => 'user',
+          'role' =>  $_POST['role'],
           'password' => password_hash($_POST['password'], PASSWORD_DEFAULT)
         ];
   
-        $query = "INSERT INTO users (username, email, password, role) VALUES (:username, :email, :password, :role)";
+        $query = "insert into users (username,email,password,role) values (:username,:email,:password,:role)";
+            
+            if(!empty($destination))
+            {
+              $data['image']     = $destination;
+              $query = "insert into users (username,email,password,role,image) values (:username,:email,:password,:role,:image)";
+            }
+
+
         query($query, $data);
         redirect('admin/users');
       }
@@ -104,11 +133,11 @@ if ($action == 'add') {
             if(!file_exists($folder))
             {
               mkdir($folder, 0777, false);
-              $errors['image'] = "Image format not supported";
+             
             }
 
             $destination = $folder . time() . $_FILES['image']['name'];
-      
+            move_uploaded_file($_FILES['image']['tmp_name'], $destination);
           }
 
         }
@@ -119,7 +148,7 @@ if ($action == 'add') {
       $data = [
         'username' => $_POST['username'],
         'email' => $_POST['email'],
-        'role' => $row['role'],
+        'role' => $_POST['role'],
         'id' => $id
       ];
       $password_str     = "";

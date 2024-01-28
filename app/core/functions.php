@@ -40,7 +40,31 @@ function oldvalue($key,$default='') {
     }
 
 }
+function add_root_to_images($content)
+{
 
+	preg_match_all("/<img[^>]+/", $content, $matches);
+
+	if(is_array($matches[0]) && count($matches[0]) > 0)
+	{
+		foreach ($matches[0] as $img) {
+
+			preg_match('/src="[^"]+/', $img, $match);
+			$new_img = str_replace('src="', 'src="'.ROOT."/", $img);
+			$content = str_replace($img, $new_img, $content);
+
+		}
+	}
+	return $content;
+}
+
+function remove_root_from_content($content)
+{
+	
+	$content = str_replace(ROOT, "", $content);
+
+	return $content;
+}
 function authenticate($row){
     $_SESSION['user']= $row;
 }
@@ -49,6 +73,45 @@ function loggedin(){
     if(!empty($_SESSION['user']))
         return true;
     return false;
+}
+function remove_images_from_content($content, $folder = 'uploads/')
+{
+
+	preg_match_all("/<img[^>]+/", $content, $matches);
+
+	if(is_array($matches[0]) && count($matches[0]) > 0)
+	{
+		foreach ($matches[0] as $img) {
+
+			if(!strstr($img, "data:"))
+			{
+				continue;
+			}
+
+			preg_match('/src="[^"]+/', $img, $match);
+			$parts = explode("base64,", $match[0]);
+
+			preg_match('/data-filename="[^"]+/', $img, $file_match);
+
+			$filename = $folder.str_replace('data-filename="', "", $file_match[0]);
+
+			file_put_contents($filename, base64_decode($parts[1]));
+			$content = str_replace($match[0], 'src="'.$filename, $content);
+			
+
+		}
+	}
+	return $content;
+}
+function user($key = '')
+{
+	if(empty($key))
+		return $_SESSION['USER'];
+
+	if(!empty($_SESSION['USER'][$key])) 
+		return $_SESSION['USER'][$key];
+
+	return '';
 }
 
 function str_to_url($url){
@@ -79,8 +142,9 @@ $pagenumber = $_GET['page'] ?? 1;
 $pagenumber= empty($pagenumber) ? 1 : $pagenumber;
 $pagenumber= $pagenumber < 1 ? 1 : $pagenumber;
 
-$currentlink = ROOT ."/".$_GET['url'] ?? 'home';
-
+$currentlink = $_GET['url'] ?? 'home';
+$currentlink =ROOT . "/" . $currentlink;
+$querystring ="";
 foreach($_GET as $key=>$value){
     if($key != 'url'){
         $querystring .= "&".$key."=".$value;
@@ -106,6 +170,16 @@ $prevlink = preg_replace("/page=.*/","page=".$prevpagenumber,$currentlink);
 $result=['currentlink'=>$currentlink,'nextlink'=>$nextlink,'firstlink'=>$firstlink,'prevlink'=>$prevlink,'pagenumber'=>$pagenumber];
 return $result;
 
+}
+function old_select($key, $value, $default = '')
+{
+	if(!empty($_POST[$key]) && $_POST[$key] == $value)
+		return " selected ";
+	
+	if($default == $value)
+		return " selected ";
+	
+	return "";
 }
 
 function createtable(){
