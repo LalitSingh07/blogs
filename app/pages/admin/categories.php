@@ -1,4 +1,5 @@
 <?php if($action == 'add'):?>
+  <?php if($_SESSION['user']['role']=='admin'):?>
 
 <div class="col-md-6 mx-auto">
   <form method="post" enctype="multipart/form-data">
@@ -33,8 +34,14 @@
   </form>
 </div>
 
+<?php else:?> 
+       
+       <div class="alert alert-danger text-center">sorry you are not an Admin
+           
+       </div>
+       <?php endif;?>
 <?php elseif($action == 'edit'):?>
-
+<?php if($_SESSION['user']['role']=='admin'):?>
 <div class="col-md-6 mx-auto">
   <form method="post" enctype="multipart/form-data">
 
@@ -74,8 +81,14 @@
 
   </form>
 </div>
-
+<?php else:?> 
+       
+       <div class="alert alert-danger text-center">sorry you are not an Admin
+           
+       </div>
+       <?php endif;?>
 <?php elseif($action == 'delete'):?>
+ <?php if($_SESSION['user']['role']=='admin'):?>
 
 <div class="col-md-6 mx-auto">
   <form method="post">
@@ -114,7 +127,12 @@
 
   </form>
 </div>
-
+<?php else:?> 
+       
+       <div class="alert alert-danger text-center">sorry you are not an Admin
+           
+       </div>
+       <?php endif;?>
 <?php else:?>
 
 <h4>

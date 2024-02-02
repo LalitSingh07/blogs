@@ -1,4 +1,6 @@
 <?php if($action == 'add'):?>
+    <?php if($_SESSION['user']['role']=='admin'):?>
+
     <div class="col-md-6 mx-auto">
         <form method="post" enctype="multipart/form-data"> 
         <h1 class="h3 mb-3 fw-normal">Add users</h1>
@@ -74,6 +76,13 @@
       
     </form>
   </div> 
+  <?php else:?> 
+       
+       <div class="alert alert-danger text-center">sorry you are not an Admin
+           
+       </div>
+
+<?php endif;?>
   <!-- ---------------edit section---------- -->
 <?php elseif($action == 'edit'):?>
     <div class="col-md-6 mx-auto">
@@ -196,6 +205,7 @@
     </form>
   </div> 
 <?php else:?> 
+<?php if($_SESSION['user']['role']=='admin'):?>
 
     <h4>Users <a href="<?=ROOT?>/admin/users/add"><button class="btn btn-primary">Add New</button></h4></a>
     <div class="table-responsive">
@@ -254,4 +264,11 @@
         </a>
     </div> 
     </div>
+    <?php else:?> 
+       
+        <div class="alert alert-danger text-center">sorry you are not an Admin
+            
+        </div>
+
+<?php endif;?> 
 <?php endif;?> 
